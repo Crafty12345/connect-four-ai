@@ -13,19 +13,19 @@
             "justMyCode": true
         },
         {
-            "name":"Multiplayer",
+            "name":"Player vs Player",
             "type": "python",
             "request":"launch",
             "program":"${file}",
-            "args":["multiplayer"],
+            "args":["PvP"],
             "console": "integratedTerminal"
         },
         {
-            "name":"Random Moves",
+            "name":"Player vs Random",
             "type": "python",
             "request":"launch",
             "program":"${file}",
-            "args":["random"],
+            "args":["PvR"],
             "console": "integratedTerminal"
         }
     ]

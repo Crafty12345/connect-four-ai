@@ -150,6 +150,24 @@ def check_for_win(grid, statuses) -> int:
                             return status
     return 0
 
+def generate_slots(slots):
+    for n in range(0, 6):
+        for i in range(0, 7):
+            circle = Circle(screen, Point(i*((SCREEN_SIZE[0]-board_padding)/7)+slot_size+(
+                board_padding*2), n*((BOARD_SIZE.height-board_padding)/7)+110+(slot_size)), slot_size, 0)
+            slots[n].append(circle)
+    return slots
+    
+board_padding = 7
+slot_size = ((450*2)/(board_padding*7)+(board_padding/2))
+
+DEF_SETTINGS = {
+    "slots": [[], [], [], [], [], []],
+    "pointer": Pointer(slot_size, Point(board_padding*2, 50), 1),
+    "game_ended": False,
+    "win_status": 0
+    
+}
 
 
 pygame.display.set_caption("Connect Four Bot")
@@ -159,25 +177,11 @@ BOARD_SIZE = pygame.Rect(0, 100, SCREEN_SIZE[0], SCREEN_SIZE[1])
 
 screen = pygame.display.set_mode(SCREEN_SIZE)
 
-board_padding = 7
-slots = [[], [], [], [], [], []]
-rand_row = random.randint(0, 5)
-rand_col = random.randint(0, 6)
-slot_size = ((450*2)/(board_padding*7)+(board_padding/2))
 
-for n in range(0, 6):
-    for i in range(0, 7):
-        circle = Circle(screen, Point(i*((SCREEN_SIZE[0]-board_padding)/7)+slot_size+(
-            board_padding*2), n*((BOARD_SIZE.height-board_padding)/7)+110+(slot_size)), slot_size, 0)
-        slots[n].append(circle)
-slots[5][rand_col].update_status(2)
-available_cols = list(range(0, 7))
-
-
-pointer = Pointer(slot_size, Point(board_padding*2, 50), 1)
-win_status = 0
-
-game_ended = False
+slots = generate_slots(DEF_SETTINGS["slots"])
+pointer = DEF_SETTINGS["pointer"]
+win_status = DEF_SETTINGS["win_status"]
+game_ended = DEF_SETTINGS["game_ended"]
 
 running = True
 while running:
@@ -196,22 +200,27 @@ while running:
                                                 ].update_status(pointer.status)
                     elif available_slot == -1:
                         pass
-                    if args.mode == "multiplayer":
+                    if args.mode == "PvP":
                         pointer.status = 2 if pointer.status+1 == 2 else 1
-                    # elif args.mode == "random":
-                    #     # red
-                    #     rand_col = random.randint(0, 6)
-                    #     available_slot = check_slot_availability(
-                    #         slots, rand_col)
-                    #     while available_slot == -1:
-                    #         rand_col = random.randint(0, 6)
-                    #         available_slot = check_slot_availability(
-                    #             slots, rand_col)
-                    # slots[available_slot[1]][available_slot[0]].update_status(2)
+                    elif args.mode == "PvR":
+                        # red
+                        rand_col = random.randint(0, 6)
+                        available_slot = check_slot_availability(
+                            slots, rand_col)
+                        while available_slot == -1:
+                            rand_col = random.randint(0, 6)
+                            available_slot = check_slot_availability(
+                                slots, rand_col)
+                        slots[available_slot[1]][available_slot[0]].update_status(2)
                     
                     win_status = check_for_win(slots,[1,2])
                     with open(f"logs/log_{log_id}.txt", "a+") as f:
                         f.write(get_grid_status(slots) + "\n")
+            if event.key == pygame.K_SPACE and game_ended:
+                slots = generate_slots([[], [], [], [], [], []])
+                pointer = DEF_SETTINGS["pointer"]
+                win_status = DEF_SETTINGS["win_status"]
+                game_ended = DEF_SETTINGS["game_ended"]
 
         if event.type == pygame.QUIT:
             running = False
