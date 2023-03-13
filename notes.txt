@@ -1,0 +1,7 @@
+4 horizontal per row
+3 vertical per column
+total of 14 down-right diagonal
+total of 14 up-right diagonal
+
+
+SUM = 45
