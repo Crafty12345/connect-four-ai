@@ -32,17 +32,33 @@ print(args.mode)
 
 
 class Point:
-    def __init__(self, x, y):
-        self.x = float(x)
-        self.y = float(y)
+    """
+    This class pretty much just exists for convinience, no real other reason.
+    """
+    def __init__(self, x: float, y: float):
+        """
+        x = the horizontal coordinate of the point \n
+        y = the vertical coordinate of the point 
+        """
+        self.x = x
+        self.y = y
 
 
 class Circle:
     """
-    With status: 0 = empty slot, 1 = red slot, 2 = yellow slot
+    A class to store the data for the slots/tokens in the game. \n
+    IMPORTANT: always use update_status() when changing the status of a Circle.
     """
 
-    def __init__(self, surface, pos, radius, status) -> None:
+    def __init__(self, surface, pos: Point, radius: float, status: int) -> None:
+
+        """
+        - With status:
+        - - 0 = empty slot;
+        - - 1 = red slot;
+        - - 2 = yellow slot
+        """
+
         self.surface = surface
         self.pos = pos
         self.radius = radius
@@ -61,17 +77,33 @@ class Circle:
 
 
 class Pointer:
+    """
+    A simple class to control attributes of the pointer.
+    IMPORTANT: When updating the position of the pointer, use
+    update_position() instead of changing the variable manually.
+    """
     def __init__(self, size, pos, status) -> None:
         self.size = size*2
         self.pos = pos
         self.selected = 0
         self.status = status
 
-    def update_position(self, selected):
+    def update_position(self, selected: int):
+        """
+        This method is used to update the position of the pointer.
+        - "selected" is an integer, which refers to the index that the pointer
+            will be moved to.
+        """
         self.selected = selected
         self.pos.x = self.selected*((self.size+board_padding)*1.75)
 
     def draw(self):
+        """
+        This method must be called every single frame,
+        otherwise the pointer will not render.
+        """
+
+
         if self.status == 1:
             pointer_red = pygame.transform.scale(
                 pointer_red_img, (self.size, self.size))
@@ -82,11 +114,14 @@ class Pointer:
             screen.blit(pointer_yellow, (self.pos.x, self.pos.y))
 
 
-def sigmoid(x):
+def sigmoid(x) -> float:
     return 1/(1+math.exp(-x))
 
 
-def get_grid_status(grid):
+def get_grid_status(grid) -> str:
+    """
+    This function returns a string, which resembles the current board.
+    """
     string = ""
     for a in grid:
         string += "\n["
@@ -96,7 +131,7 @@ def get_grid_status(grid):
     return string
 
 
-def is_col_full(grid, req_col):
+def is_col_full(grid, req_col) -> bool:
     """
     This function will return True if the column is full and False if every slot in the column is empty.
     """
@@ -131,18 +166,28 @@ def check_slot_availability(grid, req_col):
 
 
 def printDict(_dict):
+    """
+    A function which outputs a dictionary in a visually appealing way\n
+    _dict: The dictionary to be outputted
+    """
     print("\n")
     print("\n".join("{}\t\t{}".format(k, v) for k, v in _dict.items()))
 
-
-def check_for_in_a_row(grid, status):
+def process_stats(lst_horizontal: list,lst_vertical: list,
+                  lst_downRight: list,lst_upRight: list,indexes: list,status: int):
+    """
+    This function should ONLY be called by the function "check_for_in_a_row".
+    This function performs operations on the data relating to the state of the game and the player
+    or bot's progress towards winning.
+    """
+    
     count_list = {
         "STATUS": status_dict[status],
         "horizontal": [],
         "vertical": [],
         "down_right_diagonal": [],
         "up_right_diagonal": [],
-    }
+        }
 
     count_summarised = {
         "STATUS": status_dict[status],
@@ -152,8 +197,7 @@ def check_for_in_a_row(grid, status):
         "up_right_diagonal": 0,
     }
 
-    stats = {
-        "horizontal": {
+    stats = {"horizontal": {
             "mean": 0,
             "median": 0,
             "mode": 0,
@@ -180,9 +224,46 @@ def check_for_in_a_row(grid, status):
             "std": 0,
         },
 
-
-
     }
+    
+    
+    stats["horizontal"]["std"] = np.std(lst_horizontal)
+    stats["vertical"]["std"] = np.std(lst_vertical)
+    stats["down_right_diagonal"]["std"] = np.std(lst_downRight)
+    stats["up_right_diagonal"]["std"] = np.std(lst_upRight)
+
+    lst_horizontal.sort()
+    lst_horizontal = lst_horizontal[int(stats["horizontal"]["std"]*len(lst_horizontal)):]
+    lst_vertical.sort()
+    lst_vertical = lst_vertical[int(stats["vertical"]["std"]*len(lst_vertical)):]
+    lst_downRight.sort()
+    lst_downRight = lst_downRight[int(stats["down_right_diagonal"]["std"]*len(lst_downRight)):]
+    lst_upRight.sort()
+    lst_upRight = lst_upRight[int(stats["up_right_diagonal"]["std"]*len(lst_upRight)):]
+
+    count_list["horizontal"].extend(lst_horizontal)
+    count_list["vertical"].extend(lst_vertical)
+    count_list["down_right_diagonal"].extend(lst_downRight)
+    count_list["up_right_diagonal"].extend(lst_upRight)
+
+    for index in indexes:
+        count_summarised[index] = np.average((count_list[index]))
+    printDict(count_summarised)
+    print("Standard Deviation: ",np.std(count_list[index]))
+    print("Mean: ",np.mean(count_list[index]))
+    print("Median: ",np.median(count_list[index]))
+    print("n Scores: ", len(count_list[index]))
+
+
+def check_for_in_a_row(grid: list, status: int):
+    """
+    This function iterates through every grid cell to check how close the queried player is to winning.
+    
+    Grid: The grid of cells to query
+    Status: The status code of the player\n
+        - 1 = red
+        - 2 = yellow
+    """
 
 
     lst_horizontal = []
@@ -219,38 +300,17 @@ def check_for_in_a_row(grid, status):
                     lst_vertical.append(temp_vertical)
                     lst_downRight.append(temp_downRight)
                     lst_upRight.append(temp_upRight)
+    process_stats(lst_horizontal,lst_vertical,lst_downRight,lst_upRight,indexes,status)
+    
 
 
-    stats["horizontal"]["std"] = np.std(lst_horizontal)
-    stats["vertical"]["std"] = np.std(lst_vertical)
-    stats["down_right_diagonal"]["std"] = np.std(lst_downRight)
-    stats["up_right_diagonal"]["std"] = np.std(lst_upRight)
-
-    lst_horizontal.sort()
-    lst_horizontal = lst_horizontal[int(stats["horizontal"]["std"]*len(lst_horizontal)):]
-    lst_vertical.sort()
-    lst_vertical = lst_vertical[int(stats["vertical"]["std"]*len(lst_vertical)):]
-    lst_downRight.sort()
-    lst_downRight = lst_downRight[int(stats["down_right_diagonal"]["std"]*len(lst_downRight)):]
-    lst_upRight.sort()
-    lst_upRight = lst_upRight[int(stats["up_right_diagonal"]["std"]*len(lst_upRight)):]
-
-    count_list["horizontal"].extend(lst_horizontal)
-    count_list["vertical"].extend(lst_vertical)
-    count_list["down_right_diagonal"].extend(lst_downRight)
-    count_list["up_right_diagonal"].extend(lst_upRight)
-
-    for index in indexes:
-        count_summarised[index] = np.average((count_list[index]))
-    printDict(count_summarised)
-    print("Standard Deviation: ",np.std(count_list[index]))
-    print("Mean: ",np.mean(count_list[index]))
-    print("Median: ",np.median(count_list[index]))
-    print("n Scores: ", len(count_list[index]))
-    #print(len(count_list["horizontal"]))
-
-
-def check_for_win(grid, statuses) -> int:
+def check_for_win(grid: list, statuses: list[int]) -> int:
+    """
+    This function will iterate through all cells to check if a player has won
+    (achieved 4 pieces in a row) and return:
+    - The status code of the player that has won OR;
+    - 0, if no player has won
+    """
     for status in statuses:
         for row_index in range(len(grid)):
             for i in range(len(grid[row_index])):
@@ -286,6 +346,10 @@ def check_for_win(grid, statuses) -> int:
 
 
 def generate_slots(slots):
+    """
+    A simple setup function used simply to create and/or reset the board. 
+    """
+
     for n in range(0, 6):
         for i in range(0, 7):
             circle = Circle(screen, Point(i*((SCREEN_SIZE[0]-board_padding)/7)+slot_size+(
