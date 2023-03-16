@@ -27,6 +27,33 @@
             "program":"${file}",
             "args":["PvR"],
             "console": "integratedTerminal"
-        }
+        },
+        {
+            "name":"Player vs Player (with unique state logging)",
+            "type": "python",
+            "request":"launch",
+            "program":"${file}",
+            "args":["PvP","--count-states=True"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name":"Random vs Random (with unique state logging)",
+            "type": "python",
+            "request":"launch",
+            "program":"${file}",
+            "args":["RvR","--count-states=True"],
+            "console": "integratedTerminal"
+        },
+
+        {
+            "name":"Random vs Random (with unique state logging, performance optimised)",
+            "type": "python",
+            "request":"launch",
+            "program":"${file}",
+            "args":["RvR","--count-states=True","--visualise=False","--track-win-progress=False"],
+            "console": "integratedTerminal"
+        },
+
+
     ]
 }

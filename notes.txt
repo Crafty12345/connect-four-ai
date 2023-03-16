@@ -5,3 +5,19 @@ total of 14 up-right diagonal
 
 
 SUM = 45
+
+
+
+
+1) read combinations from file upon program startup
+2) save combinations to variable in list form
+3) DO NOT store combinations in list form when adding/checking for duplicates: INSTEAD:
+	i) load file into list variable
+	ii) update/check THAT list
+	iii) IF DUPLICATE:
+		a) read num of duplicates from DIFFERENT file and store as int
+		b) increase num of duplicates
+		c) overwrite file with num of duplicates with the updated number of duplicates
+	iv) get new len() of list and store in int
+	v) overwrite file with NEW list
+	vi) close file and empty list variable
