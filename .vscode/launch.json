@@ -50,7 +50,7 @@
             "type": "python",
             "request":"launch",
             "program":"${file}",
-            "args":["RvR","--count-states=True","--visualise=False","--track-win-progress=False"],
+            "args":["RvR","--count-states","--no-visualise","--no-track-win-progress"],
             "console": "integratedTerminal"
         },
 
