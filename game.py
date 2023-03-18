@@ -4,6 +4,7 @@ from time import time
 from math import exp, e
 from pygame import init, image, display, Rect, font, transform, event, KEYDOWN, \
                     K_LEFT, K_RIGHT, K_RETURN, K_SPACE, QUIT, draw, Color, quit
+from orjson import dumps,loads,OPT_NON_STR_KEYS
 
 
 log_id = time()
@@ -712,11 +713,11 @@ if args.visualise == False and args.mode == "RvR" and args.count_states == True:
              for x in nditer(possible_cols):
                 query_slot = check_slot_availability(slots,int(x))
                 if query_slot != -1:
-                    append(available_slots,query_slot)
+                    available_slots.append(query_slot)
              if available_slots != []:
                 available_slots = array(available_slots)
-                available_slot = random.choice(available_slot)
-                slots[available_slot[1]][available_slot[0]].update_status(1)
+                available_slot = available_slots[random.choice(len(available_slots),1)]
+                slots[available_slot[0][1]][available_slot[0][0]].update_status(1)
              else:
                 available_slot = -1
              possible_cols = arange(0,7)
@@ -724,11 +725,11 @@ if args.visualise == False and args.mode == "RvR" and args.count_states == True:
              for x in nditer(possible_cols):
                 query_slot = check_slot_availability(slots,int(x))
                 if query_slot != -1:
-                    append(available_slots,query_slot)
+                    available_slots.append(query_slot)
              if available_slots != []:
                 available_slots = array(available_slots)
-                available_slot = random.choice(available_slot)
-                slots[available_slot[1]][available_slot[0]].update_status(1)
+                available_slot = available_slots[random.choice(len(available_slots),1)]
+                slots[available_slot[0][1]][available_slot[0][0]].update_status(2)
              else:
                 available_slot = -1
  
@@ -740,20 +741,21 @@ if args.visualise == False and args.mode == "RvR" and args.count_states == True:
                     f.write(get_grid_status(slots) + "\n")
              turn_played = True
         if turn_played == True:
-            board_state_enc = [[X.status for X in row] for row in slots]
-            with open("data/possible_combinations", "r") as combination_file_read:
-                unique_state_list = eval(combination_file_read.read())
-                if board_state_enc not in unique_state_list:
-                    num_combinations += 1
-                    unique_state_list.append(board_state_enc)
-                    with open("data/possible_combinations", "w+") as combination_file_write:
-                        combination_file_write.write(str(unique_state_list))
-                else:
-                    duplicate_combinations += 1
-                    with open("data/num_duplicates", "w+") as num_duplicates_file_write:
-                        num_duplicates_file_write.write(
-                            str(duplicate_combinations))
-            unique_state_list = []
+            #TODO: Convert board_state_enc to dict
+            board_state_enc = {i: [v.status for v in e] for i, e in enumerate(slots)}
+            with open("data/possible_combinations.json", "rb") as f:
+                _bytes = f.read()
+                unique_state_dict = loads(_bytes)
+            if board_state_enc not in unique_state_dict:
+                num_combinations += 1
+                unique_state_dict[len(unique_state_dict)+1] = board_state_enc
+                with open("data/possible_combinations.json", "wb+") as f:
+                    f.write(dumps(unique_state_dict,option=OPT_NON_STR_KEYS))
+            else:
+                duplicate_combinations += 1
+                with open("data/num_duplicates", "w+") as num_duplicates_file_write:
+                    num_duplicates_file_write.write(
+                        str(duplicate_combinations))
             print(
                 f"Possible combinations: {str(num_combinations)}, Duplicate combinations: {str(duplicate_combinations)}")
         if win_status != 0:
