@@ -1,5 +1,4 @@
-from numpy import mean, std, median, average
-from random import random
+from numpy import mean, std, median, average, arange, where,random,extract,nditer,append,empty,array
 from argparse import ArgumentParser, BooleanOptionalAction
 from time import time
 from math import exp, e
@@ -8,7 +7,6 @@ from pygame import init, image, display, Rect, font, transform, event, KEYDOWN, 
 
 
 log_id = time()
-
 status_dict = {
     0: "NONE",
     1: "RED",
@@ -32,6 +30,8 @@ parser.add_argument("--visualise", action=BooleanOptionalAction, type=bool, requ
 parser.add_argument("--track-win-progress", action=BooleanOptionalAction, type=bool, required=False, default=True,
                     help="""Whether or not to run the check_n_in_row()
                             and process_stats() methods.""")
+parser.add_argument("--log-turns", action=BooleanOptionalAction, type=bool, required=False, default=True,
+                    help="""Whether or not to save board states to a file after each turn""")
 
 args = parser.parse_args()
 print(args)
@@ -192,7 +192,6 @@ def check_slot_availability(grid, req_col):
         -1 if all cells in column are filled OR;
         The coordinates of the available slot of the column
     """
-
     col_sum = 0
     for i in range(len(grid)):
         col_sum += grid[i][req_col].status
@@ -533,8 +532,9 @@ if args.visualise == True and args.mode != "RvR":
                             win_status = check_for_win(slots, [1, 2])
                             if win_status > 0:
                                 scores[win_status-1] += 1
-                            with open(f"logs/log_{log_id}.txt", "a+") as f:
-                                f.write(get_grid_status(slots) + "\n")
+                            if args.log_turn == True:
+                                with open(f"logs/log_{log_id}.txt", "a+") as f:
+                                    f.write(get_grid_status(slots) + "\n")
 
                             if args.count_states == True:
                                 board_state_enc = [
@@ -706,26 +706,38 @@ if args.visualise == False and args.mode == "RvR" and args.count_states == True:
         """
         turn_played = False
         if not game_ended:
-             rand_col = int(random()*6)
-             available_slot = check_slot_availability(
-                   slots, rand_col)
-             while available_slot == -1:
-                    rand_col = int(random()*6)
-                    available_slot = check_slot_availability(
-                        slots, rand_col)
-             slots[available_slot[1]][available_slot[0]].update_status(1)
-             rand_col = int(random()*6)
-             available_slot = check_slot_availability(
-                 slots, rand_col)
-             while available_slot == -1:
-                 rand_col = int(random()*6)
-                 available_slot = check_slot_availability(
-                     slots, rand_col)
-             slots[available_slot[1]][available_slot[0]].update_status(2)
+            #TODO: Fix this bit here
+             possible_cols = arange(0,7)
+             available_slots = []
+             for x in nditer(possible_cols):
+                query_slot = check_slot_availability(slots,int(x))
+                if query_slot != -1:
+                    append(available_slots,query_slot)
+             if available_slots != []:
+                available_slots = array(available_slots)
+                available_slot = random.choice(available_slot)
+                slots[available_slot[1]][available_slot[0]].update_status(1)
+             else:
+                available_slot = -1
+             possible_cols = arange(0,7)
+             available_slots = []
+             for x in nditer(possible_cols):
+                query_slot = check_slot_availability(slots,int(x))
+                if query_slot != -1:
+                    append(available_slots,query_slot)
+             if available_slots != []:
+                available_slots = array(available_slots)
+                available_slot = random.choice(available_slot)
+                slots[available_slot[1]][available_slot[0]].update_status(1)
+             else:
+                available_slot = -1
  
              win_status = check_for_win(slots, [1, 2])
              if win_status > 0:
                  scores[win_status-1] += 1
+             if args.log_turns == True:
+                with open(f"logs/log_{log_id}.txt", "a+") as f:
+                    f.write(get_grid_status(slots) + "\n")
              turn_played = True
         if turn_played == True:
             board_state_enc = [[X.status for X in row] for row in slots]
