@@ -1,0 +1,27 @@
+behaviors:
+  connect_4_ai:
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 128
+      buffer_size: 1280
+      learning_rate: 0.00006
+      beta: 0.01
+      epsilon: 0.15
+      lambd: 0.99
+      num_epoch: 3
+      learning_rate_schedule: constant
+      beta_schedule: constant
+      epsilon_schedule: constant
+    network_settings:
+      normalize: false
+      hidden_units: 128
+      num_layers: 4
+    reward_signals:
+      extrinsic:
+        gamma: 0.9
+        strength: 1.0
+    keep_checkpoints: 5
+    threaded: false
+    max_steps: 100000000
+    time_horizon: 42
+    summary_freq: 10000

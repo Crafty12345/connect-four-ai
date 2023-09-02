@@ -1,0 +1,66 @@
+{
+    "connect_4_ai": {
+        "elo": 7896.862662574383,
+        "checkpoints": [
+            {
+                "steps": 11499996,
+                "file_path": "results\\test6\\connect_4_ai\\connect_4_ai-11499996.onnx",
+                "reward": 1.0,
+                "creation_time": 1693617823.5485084,
+                "auxillary_file_paths": [
+                    "results\\test6\\connect_4_ai\\connect_4_ai-11499996.pt"
+                ]
+            },
+            {
+                "steps": 11999996,
+                "file_path": "results\\test6\\connect_4_ai\\connect_4_ai-11999996.onnx",
+                "reward": 0.8899999998509884,
+                "creation_time": 1693619417.9106996,
+                "auxillary_file_paths": [
+                    "results\\test6\\connect_4_ai\\connect_4_ai-11999996.pt"
+                ]
+            },
+            {
+                "steps": 12499999,
+                "file_path": "results\\test6\\connect_4_ai\\connect_4_ai-12499999.onnx",
+                "reward": 1.0,
+                "creation_time": 1693621116.8768718,
+                "auxillary_file_paths": [
+                    "results\\test6\\connect_4_ai\\connect_4_ai-12499999.pt"
+                ]
+            },
+            {
+                "steps": 12999998,
+                "file_path": "results\\test6\\connect_4_ai\\connect_4_ai-12999998.onnx",
+                "reward": -1.0,
+                "creation_time": 1693622825.9477985,
+                "auxillary_file_paths": [
+                    "results\\test6\\connect_4_ai\\connect_4_ai-12999998.pt"
+                ]
+            },
+            {
+                "steps": 13437322,
+                "file_path": "results\\test6\\connect_4_ai\\connect_4_ai-13437322.onnx",
+                "reward": null,
+                "creation_time": 1693624343.872693,
+                "auxillary_file_paths": [
+                    "results\\test6\\connect_4_ai\\connect_4_ai-13437322.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 13437322,
+            "file_path": "results\\test6\\connect_4_ai.onnx",
+            "reward": null,
+            "creation_time": 1693624343.872693,
+            "auxillary_file_paths": [
+                "results\\test6\\connect_4_ai\\connect_4_ai-13437322.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.29.0",
+        "torch_version": "2.0.1+cu118"
+    }
+}
