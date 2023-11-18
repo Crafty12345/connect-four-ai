@@ -9,6 +9,8 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using System.Runtime.CompilerServices;
+using UnityEngine.UIElements;
+using JetBrains.Annotations;
 
 public enum SlotStatuses
 {
@@ -51,12 +53,18 @@ public class InstanceManager : MonoBehaviour
     public GameObject randomAgent;
     public GameObject playerAgent;
 
-    static System.Random random;
+    public TextMeshPro cumReward;
 
+    static System.Random random;
 
     void InitialiseTurn()
     {
         current_turn = ToggleTurn(ai_colour);
+    }
+
+    public AgentManager getAgentFromStatus(SlotStatuses status)
+    {
+        return (status == SlotStatuses.Yellow) ? yellowAgent : (status == SlotStatuses.Red) ? redAgent : null;
     }
 
     SlotStatuses ToggleTurn(SlotStatuses status)
@@ -179,6 +187,88 @@ public class InstanceManager : MonoBehaviour
         return matrix;
     }
 
+    public List<int> LGetMatrix()
+    {
+        List<int> matrix = new List<int>();
+        foreach (GameObject slot in slots)
+        {
+            matrix.Add((int)slot.GetComponent<SlotData>().slotStatus);
+        }
+        return matrix;
+    }
+
+    public List<float> LGetNormalisedMatrix()
+    {
+
+        List<int> matrix = LGetMatrix();
+        int max_val = matrix.Max();
+        int min_val = matrix.Min();
+
+        List<float> normalised_matrix = new List<float>();
+        foreach (int s in matrix)
+        {
+            normalised_matrix.Add(NormaliseValue(s, min_val, max_val)) ;
+        }
+
+        return normalised_matrix;
+    }
+
+    private static float NormaliseValue(int val, int min_val, int max_val)
+    {
+        if(min_val == max_val) { return 0; }
+        return (2 * (val - min_val) / (max_val - min_val)) - 1;
+    }
+
+    public long Base3ToDecimal(string num_str)
+    {
+        long new_num = 0;
+
+        char[] char_ar = num_str.ToCharArray();
+        Array.Reverse(char_ar);
+
+        for (int i = 0; i < char_ar.Length; i++)
+        {
+            new_num += char_ar[i] * (int)math.pow(3,i);
+        }
+        return new_num;
+    }
+
+    public long GetBoardHash()
+    {
+        float[] statuses = GetStatuses(slots);
+
+        string num_str = "";
+
+        foreach (float _status in statuses)
+        {
+            num_str += _status;
+        }
+
+        return Base3ToDecimal(num_str);
+
+    }
+
+    public float NormaliseBoardHash(long board_hash)
+    {
+        long max = (long)math.pow(3, board_dims[0] * board_dims[1])-1;
+        double val = (double)board_hash / (double)max;
+        return (float)((val*2)-1);
+    }
+
+    private void UpdateBlockReward(SlotStatuses blockedStatus)
+    {
+        if (gameMode == GameMode.AIvAI)
+        {
+            getAgentFromStatus(ToggleTurn(blockedStatus)).AddReward(AgentConstants.blockReward);
+            getAgentFromStatus(blockedStatus).AddReward(-(AgentConstants.blockReward));
+        }
+        if ((gameMode == GameMode.RvAI || gameMode == GameMode.PvAI) && ai_colour == ToggleTurn(blockedStatus))
+        {
+            getAgentFromStatus(ToggleTurn(blockedStatus)).AddReward(AgentConstants.blockReward);
+            getAgentFromStatus(blockedStatus).AddReward(-(AgentConstants.blockReward));
+        }
+    }
+
     public float[] GetStatuses(List<GameObject> slots)
     {
         float[] statuses = new float[board_dims[0] * board_dims[1]];
@@ -186,10 +276,11 @@ public class InstanceManager : MonoBehaviour
         {
             statuses[slot.GetComponent<SlotData>().slotID] = (int)slot.GetComponent<SlotData>().slotStatus;
         }
+
         return statuses;
     }
 
-    public bool CheckHorizontalWin(SlotStatuses status)
+    public MoveData CheckHorizontalWin(SlotStatuses status)
     {
         List<int> slot_data_temp = new List<int>();
         List<int> max_vals = new List<int>();
@@ -216,6 +307,13 @@ public class InstanceManager : MonoBehaviour
                     else
                     {
                         max_vals.Add(3);
+                        if (gameMode == GameMode.AIvAI)
+                        {
+                            if ((slotID + board_dims[0] + 3 < board_dims[0]) && slots[slotID + board_dims[0] + 3].GetComponent<SlotData>().slotStatus == ToggleTurn(status))
+                            {
+                                getAgentFromStatus(ToggleTurn(status)).AddReward(AgentConstants.blockReward);
+                            }
+                        }
                     }
                 }
                 else
@@ -241,13 +339,13 @@ public class InstanceManager : MonoBehaviour
 
         if (n_in_row >= 4)
         {
-            return true;
+            return new MoveData(status,true);
         }
 
-        return false;
+        return new MoveData(status, false);
     }
 
-    public bool CheckVerticalWin(SlotStatuses status)
+    public MoveData CheckVerticalWin(SlotStatuses status)
     {
 
         List<int> slot_data_temp = new List<int>();
@@ -274,6 +372,15 @@ public class InstanceManager : MonoBehaviour
                     }
                     else
                     {
+                        
+                        if(gameMode == GameMode.AIvAI || gameMode == GameMode.RvAI || gameMode == GameMode.PvAI)
+                        {
+                            if ((slotID + board_dims[0] * 3 < slots.Count) && slots[slotID + board_dims[0] * 3].GetComponent<SlotData>().slotStatus == ToggleTurn(status))
+                            {
+                                UpdateBlockReward(status);
+
+                            }
+                        }
                         max_vals.Add(3);
                     }
                 }
@@ -301,12 +408,13 @@ public class InstanceManager : MonoBehaviour
 
         if (n_in_row >= 4)
         {
-            return true;
+            return new MoveData(status, true);
         }
-        return false;
+        return new MoveData(status, false);
     }
 
-    public bool CheckUpRightWin(SlotStatuses status, bool use_debug = false)
+
+    public MoveData CheckUpRightWin(SlotStatuses status, bool use_debug = false)
     {
         //UpRight = Increase horizontal, increase vertical
 
@@ -338,6 +446,17 @@ public class InstanceManager : MonoBehaviour
                 else
                 {
                     max_vals.Add(n_in_row);
+                    
+                    if(n_in_row == 3)
+                    {
+                        if(gameMode == GameMode.AIvAI || gameMode == GameMode.PvAI || gameMode == GameMode.RvAI)
+                        {
+                            if ((slot_data_temp[i] + (board_dims[0] + 1) * 3 < slots.Count) && slots[slot_data_temp[i] + (board_dims[0] + 1) * 3].GetComponent<SlotData>().slotStatus == ToggleTurn(status))
+                            {
+                                UpdateBlockReward(status);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -352,12 +471,12 @@ public class InstanceManager : MonoBehaviour
 
         if (n_in_row >= 4)
         {
-            return true;
+            return new MoveData(status, true);
         }
-        return false;
+        return new MoveData(status, false);
     }
 
-    public bool CheckDownRightWin(SlotStatuses status, bool use_debug = false)
+    public MoveData CheckDownRightWin(SlotStatuses status, bool use_debug = false)
     {
         //UpRight = Increase horizontal, increase vertical
 
@@ -390,6 +509,20 @@ public class InstanceManager : MonoBehaviour
                 else
                 {
                     max_vals.Add(n_in_row);
+                    
+                    if (n_in_row == 3)
+                    {
+                        if(gameMode == GameMode.AIvAI || gameMode == GameMode.RvAI || gameMode == GameMode.PvAI)
+                        {
+                            if ((slot_data_temp[i] - (board_dims[0] - 1) * 3 < slots.Count) && (slot_data_temp[i] - (board_dims[0] - 1) * 3 >= 0))
+                            {
+                                if (slots[slot_data_temp[i] - (board_dims[0] - 1) * 3].GetComponent<SlotData>().slotStatus == ToggleTurn(status))
+                                {
+                                    UpdateBlockReward(status);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -404,16 +537,21 @@ public class InstanceManager : MonoBehaviour
 
         if (n_in_row >= 4)
         {
-            return true;
+            return new MoveData(status, true);
         }
-        return false;
+        return new MoveData(status, false);
     }
 
 
     public bool CheckWin(SlotStatuses status)
     {
 
-        if (CheckHorizontalWin(status) || CheckVerticalWin(status) || CheckUpRightWin(status, false) || CheckDownRightWin(status, false))
+        MoveData horizontal_data = CheckHorizontalWin(status);
+        MoveData vertical_data = CheckVerticalWin(status);
+        MoveData upRight_data = CheckUpRightWin(status, false);
+        MoveData downRight_data = CheckDownRightWin(status, false);
+
+        if (horizontal_data.win || vertical_data.win || upRight_data.win || downRight_data.win)
         {
 
             if (gameMode == GameMode.PvP)
@@ -728,7 +866,7 @@ public class InstanceManager : MonoBehaviour
             {SlotStatuses.Red,0}
         };
 
-        if(gameMode == GameMode.RvAI)
+        if (gameMode == GameMode.RvAI)
         {
             turn_played = true;
             randomAgent.SetActive(true);
@@ -804,15 +942,15 @@ public class InstanceManager : MonoBehaviour
     {
         if (winner == check_winner)
         {
-            return 1.0f;
+            return AgentConstants.winReward;
         }
         else if (winner == ToggleTurn(check_winner))
         {
-            return -1.0f;
+            return AgentConstants.loseReward;
         }
         else
         {
-            return -0.1f;
+            return AgentConstants.tieReward;
         }
     }
 

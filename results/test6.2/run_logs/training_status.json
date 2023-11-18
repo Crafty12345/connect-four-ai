@@ -3,31 +3,58 @@
         "elo": 1548.4430635634249,
         "checkpoints": [
             {
-                "steps": 35973,
-                "file_path": "results\\test6.2\\connect_4_ai\\connect_4_ai-35973.onnx",
-                "reward": 1.0,
-                "creation_time": 1693661201.8806918,
+                "steps": 24499998,
+                "file_path": "results\\test6.2\\connect_4_ai\\connect_4_ai-24499998.onnx",
+                "reward": 0.9615384615384616,
+                "creation_time": 1694249388.3753927,
                 "auxillary_file_paths": [
-                    "results\\test6.2\\connect_4_ai\\connect_4_ai-35973.pt"
+                    "results\\test6.2\\connect_4_ai\\connect_4_ai-24499998.pt"
                 ]
             },
             {
-                "steps": 109525,
-                "file_path": "results\\test6.2\\connect_4_ai\\connect_4_ai-109525.onnx",
-                "reward": 0.952191235059761,
-                "creation_time": 1693661804.482418,
+                "steps": 24999995,
+                "file_path": "results\\test6.2\\connect_4_ai\\connect_4_ai-24999995.onnx",
+                "reward": 0.9629629629629629,
+                "creation_time": 1694250564.9975638,
                 "auxillary_file_paths": [
-                    "results\\test6.2\\connect_4_ai\\connect_4_ai-109525.pt"
+                    "results\\test6.2\\connect_4_ai\\connect_4_ai-24999995.pt"
+                ]
+            },
+            {
+                "steps": 25499999,
+                "file_path": "results\\test6.2\\connect_4_ai\\connect_4_ai-25499999.onnx",
+                "reward": 0.9921259842519685,
+                "creation_time": 1694251701.0083392,
+                "auxillary_file_paths": [
+                    "results\\test6.2\\connect_4_ai\\connect_4_ai-25499999.pt"
+                ]
+            },
+            {
+                "steps": 25999996,
+                "file_path": "results\\test6.2\\connect_4_ai\\connect_4_ai-25999996.onnx",
+                "reward": 0.9194630872483222,
+                "creation_time": 1694252800.632925,
+                "auxillary_file_paths": [
+                    "results\\test6.2\\connect_4_ai\\connect_4_ai-25999996.pt"
+                ]
+            },
+            {
+                "steps": 26014737,
+                "file_path": "results\\test6.2\\connect_4_ai\\connect_4_ai-26014737.onnx",
+                "reward": 1.0,
+                "creation_time": 1694252834.688235,
+                "auxillary_file_paths": [
+                    "results\\test6.2\\connect_4_ai\\connect_4_ai-26014737.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 109525,
+            "steps": 26014737,
             "file_path": "results\\test6.2\\connect_4_ai.onnx",
-            "reward": 0.952191235059761,
-            "creation_time": 1693661804.482418,
+            "reward": 1.0,
+            "creation_time": 1694252834.688235,
             "auxillary_file_paths": [
-                "results\\test6.2\\connect_4_ai\\connect_4_ai-109525.pt"
+                "results\\test6.2\\connect_4_ai\\connect_4_ai-26014737.pt"
             ]
         }
     },

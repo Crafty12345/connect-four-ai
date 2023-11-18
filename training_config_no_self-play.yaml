@@ -2,10 +2,10 @@ behaviors:
   connect_4_ai:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 128
-      buffer_size: 1280
-      learning_rate: 0.00006
-      beta: 0.01
+      batch_size: 64
+      buffer_size: 640
+      learning_rate: 0.0004
+      beta: 0.002
       epsilon: 0.15
       lambd: 0.99
       num_epoch: 3
@@ -16,6 +16,9 @@ behaviors:
       normalize: false
       hidden_units: 128
       num_layers: 4
+      memory:
+        memory_size: 64
+        sequence_length: 42
     reward_signals:
       extrinsic:
         gamma: 0.9

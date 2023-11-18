@@ -48,21 +48,44 @@ public class AgentManager : Agent
             }
         }
     }
+    private bool CanCollectObservations()
+    {
+        if ((gameMode == GameMode.AIvAI) ||
+            ((gameMode == GameMode.RvAI || gameMode == GameMode.PvAI) &&
+            agent_colour == instanceManager.ai_colour))
+        {
+            return true;
+        }
+
+        else { return false; }
+    }
 
     public override void CollectObservations(VectorSensor sensor)
     {
 
         if (gameObject.activeSelf)
         {
-            if (gameMode == GameMode.AIvAI)
+            sensor.AddObservation((int)agent_colour);
+            if (CanCollectObservations())
             {
-                sensor.AddObservation(instanceManager.GetStatuses(instanceManager.slots));
-            }
-            else if ((gameMode == GameMode.RvAI || gameMode == GameMode.PvAI) && agent_colour == instanceManager.ai_colour)
-            {
-                sensor.AddObservation(instanceManager.GetStatuses(instanceManager.slots));
-            }
+                switch (AgentConstants.observationType)
+                {
+                    case ObservationType.NormalisedArray:
+                        sensor.AddObservation(instanceManager.LGetNormalisedMatrix());
+                        break;
+                    case ObservationType.Array:
+                        sensor.AddObservation((IList<float>)instanceManager.LGetMatrix());
+                        break;
+                    case ObservationType.NormalisedHash:
+                        sensor.AddObservation(instanceManager.NormaliseBoardHash(instanceManager.GetBoardHash()));
+                        break;
+                    case ObservationType.Hash:
+                        sensor.AddObservation(instanceManager.GetBoardHash());
+                        break;
 
+                }
+            }
+            instanceManager.cumReward.text = "Cumulative reward: " + GetCumulativeReward().ToString();
         }
     }
 
@@ -87,7 +110,7 @@ public class AgentManager : Agent
     {
         if (gameObject.activeSelf)
         {
-            SetReward(instanceManager.GetReward(instanceManager.latest_winner, agent_colour));
+            AddReward(instanceManager.GetReward(instanceManager.latest_winner, agent_colour));
             EndEpisode();
         }
     }

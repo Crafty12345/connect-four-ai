@@ -1,0 +1,29 @@
+{
+    "connect_4_ai": {
+        "checkpoints": [
+            {
+                "steps": 2587,
+                "file_path": "results\\temp\\connect_4_ai\\connect_4_ai-2587.onnx",
+                "reward": 0.2036363673210144,
+                "creation_time": 1700274080.6433702,
+                "auxillary_file_paths": [
+                    "results\\temp\\connect_4_ai\\connect_4_ai-2587.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 2587,
+            "file_path": "results\\temp\\connect_4_ai.onnx",
+            "reward": 0.2036363673210144,
+            "creation_time": 1700274080.6433702,
+            "auxillary_file_paths": [
+                "results\\temp\\connect_4_ai\\connect_4_ai-2587.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.29.0",
+        "torch_version": "2.0.1+cu118"
+    }
+}

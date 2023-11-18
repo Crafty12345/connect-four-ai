@@ -1,0 +1,111 @@
+{
+    "connect_4_ai": {
+        "elo": 861.608095497201,
+        "checkpoints": [
+            {
+                "steps": 215719,
+                "file_path": "results\\test6.4\\connect_4_ai\\connect_4_ai-215719.onnx",
+                "reward": -0.048458149779735685,
+                "creation_time": 1694266152.8929634,
+                "auxillary_file_paths": [
+                    "results\\test6.4\\connect_4_ai\\connect_4_ai-215719.pt"
+                ]
+            },
+            {
+                "steps": 242842,
+                "file_path": "results\\test6.4\\connect_4_ai\\connect_4_ai-242842.onnx",
+                "reward": 1.0,
+                "creation_time": 1694266919.494266,
+                "auxillary_file_paths": [
+                    "results\\test6.4\\connect_4_ai\\connect_4_ai-242842.pt"
+                ]
+            },
+            {
+                "steps": 328440,
+                "file_path": "results\\test6.4\\connect_4_ai\\connect_4_ai-328440.onnx",
+                "reward": null,
+                "creation_time": 1694267702.8498385,
+                "auxillary_file_paths": [
+                    "results\\test6.4\\connect_4_ai\\connect_4_ai-328440.pt"
+                ]
+            },
+            {
+                "steps": 384070,
+                "file_path": "results\\test6.4\\connect_4_ai\\connect_4_ai-384070.onnx",
+                "reward": null,
+                "creation_time": 1694267853.6969714,
+                "auxillary_file_paths": [
+                    "results\\test6.4\\connect_4_ai\\connect_4_ai-384070.pt"
+                ]
+            },
+            {
+                "steps": 396166,
+                "file_path": "results\\test6.4\\connect_4_ai\\connect_4_ai-396166.onnx",
+                "reward": null,
+                "creation_time": 1694268257.1002147,
+                "auxillary_file_paths": [
+                    "results\\test6.4\\connect_4_ai\\connect_4_ai-396166.pt"
+                ]
+            },
+            {
+                "steps": 417811,
+                "file_path": "results\\test6.4\\connect_4_ai\\connect_4_ai-417811.onnx",
+                "reward": null,
+                "creation_time": 1694268568.2671053,
+                "auxillary_file_paths": [
+                    "results\\test6.4\\connect_4_ai\\connect_4_ai-417811.pt"
+                ]
+            },
+            {
+                "steps": 499959,
+                "file_path": "results\\test6.4\\connect_4_ai\\connect_4_ai-499959.onnx",
+                "reward": 0.0,
+                "creation_time": 1694268776.4167612,
+                "auxillary_file_paths": [
+                    "results\\test6.4\\connect_4_ai\\connect_4_ai-499959.pt"
+                ]
+            },
+            {
+                "steps": 540573,
+                "file_path": "results\\test6.4\\connect_4_ai\\connect_4_ai-540573.onnx",
+                "reward": 0.0,
+                "creation_time": 1694268838.7885513,
+                "auxillary_file_paths": [
+                    "results\\test6.4\\connect_4_ai\\connect_4_ai-540573.pt"
+                ]
+            },
+            {
+                "steps": 999976,
+                "file_path": "results\\test6.4\\connect_4_ai\\connect_4_ai-999976.onnx",
+                "reward": null,
+                "creation_time": 1694269567.9535172,
+                "auxillary_file_paths": [
+                    "results\\test6.4\\connect_4_ai\\connect_4_ai-999976.pt"
+                ]
+            },
+            {
+                "steps": 1247616,
+                "file_path": "results\\test6.4\\connect_4_ai\\connect_4_ai-1247616.onnx",
+                "reward": null,
+                "creation_time": 1694269954.1763816,
+                "auxillary_file_paths": [
+                    "results\\test6.4\\connect_4_ai\\connect_4_ai-1247616.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1247616,
+            "file_path": "results\\test6.4\\connect_4_ai.onnx",
+            "reward": null,
+            "creation_time": 1694269954.1763816,
+            "auxillary_file_paths": [
+                "results\\test6.4\\connect_4_ai\\connect_4_ai-1247616.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.29.0",
+        "torch_version": "2.0.1+cu118"
+    }
+}
