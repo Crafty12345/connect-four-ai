@@ -47,6 +47,7 @@ public class InstanceManager : MonoBehaviour
     public SlotStatuses ai_colour;
     public int debug_seed;
     public SlotStatuses latest_winner;
+    public static bool gameStarted;
 
     public AgentManager yellowAgent;
     public AgentManager redAgent;
@@ -837,6 +838,7 @@ public class InstanceManager : MonoBehaviour
 
     public void StartGame()
     {
+        gameStarted = true;
         gameFinished = false;
 
         foreach (Transform t in transform)
@@ -870,7 +872,12 @@ public class InstanceManager : MonoBehaviour
         }
         if(gameMode == GameMode.PvAI)
         {
-            turn_played = false;
+            if (!redAgent.plays_second)
+            {
+                turn_played = true;
+                current_turn = ToggleTurn(SlotStatuses.Yellow);
+                redAgent.RequestDecision();
+            }
         }
     }
 
@@ -953,7 +960,7 @@ public class InstanceManager : MonoBehaviour
         redAgent.GetComponent<AgentManager>().DoEnable();
 
         InitialiseColourData();
-        StartGame();
+        if (!gameStarted){StartGame();}
     }
 
     private KeyCode GetKeyPressed()
