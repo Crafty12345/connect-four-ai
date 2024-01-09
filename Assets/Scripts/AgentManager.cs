@@ -25,13 +25,16 @@ public class AgentManager : Agent
     {
         if (gameObject.activeSelf)
         {
+            MaxStep = 128;
+            if(instanceManager.gameMode == GameMode.PvAI) { MaxStep = 0; }
+            Academy.Instance.OnEnvironmentReset += instanceManager.StartGame;
             if (!plays_second)
             {
                 RequestDecision();
             }
         }
-
     }
+
 
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -62,7 +65,6 @@ public class AgentManager : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-
         if (gameObject.activeSelf)
         {
             sensor.AddObservation((int)agent_colour);
@@ -105,6 +107,25 @@ public class AgentManager : Agent
         }
     }
     */
+
+    public override void OnEpisodeBegin()
+    {
+        instanceManager.StartGame();
+    }
+
+    private void Update()
+    {
+        if (!Academy.Instance.IsCommunicatorOn && !(instanceManager.gameMode == GameMode.PvAI))
+        {
+            Debug.LogWarning("Warning: Communicator not detected.");
+        }
+        /*if(Academy.Instance.StepCount > MaxStep)
+        {
+            AddReward(AgentConstants.maxStepReward);
+            EndEpisode();
+            //Debug.LogWarning("Warning: Maximum step count exceeded");
+        }*/
+    }
 
     public void UpdateReward()
     {

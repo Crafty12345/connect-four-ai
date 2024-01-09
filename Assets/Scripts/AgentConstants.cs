@@ -10,6 +10,7 @@ public class AgentConstants: MonoBehaviour
     public static float loseReward;
     public static float surviveReward;
     public static float blockReward;
+    public static float maxStepReward;
     public static ObservationType observationType;
 
     private void Awake()
@@ -33,5 +34,6 @@ public class AgentConstants: MonoBehaviour
         surviveReward = scriptableObjectData.surviveReward;
         blockReward = scriptableObjectData.blockReward;
         observationType = scriptableObjectData.observationType;
+        maxStepReward = scriptableObjectData.maxStepReward;
     }
 }

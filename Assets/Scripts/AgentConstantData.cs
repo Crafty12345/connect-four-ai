@@ -10,6 +10,7 @@ public class AgentConstantData: ScriptableObject
     public float loseReward;
     public float surviveReward;
     public float blockReward;
+    public float maxStepReward;
     public ObservationType observationType;
 }
 

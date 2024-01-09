@@ -21,7 +21,7 @@ public class PlayerManager : MonoBehaviour
             {
                 instance.PlayerPlayTurn();
             }
-            else if (Input.anyKeyDown && instance.gameFinished && Input.GetKeyDown(KeyCode.Return))
+            if (transform.parent.Find("restart_text").gameObject.activeInHierarchy && Input.GetKeyDown(KeyCode.Return))
             {
                 transform.parent.Find("restart_text").gameObject.SetActive(false);
                 instance.StartGame();

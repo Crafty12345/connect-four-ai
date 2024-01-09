@@ -558,7 +558,6 @@ public class InstanceManager : MonoBehaviour
             {
                 transform.parent.GetComponentInChildren<WinTextManager>(true).SetWinText(status, this);
             }
-            gameFinished = true;
             if (gameMode == GameMode.PvP || gameMode == GameMode.PvAI)
             {
                 transform.parent.Find("restart_text").gameObject.SetActive(true);
@@ -580,7 +579,7 @@ public class InstanceManager : MonoBehaviour
             yellow_win_ratio_text.text = ((float)(yellow_win_ratio * 100)).ToString() + "%";
             red_win_ratio_text.text = ((float)(red_win_ratio * 100)).ToString() + "%";
             tie_ratio_text.text = ((float)(tie_ratio * 100)).ToString() + "%";
-
+            gameFinished = true;
             return true;
         }
         return false;
@@ -604,7 +603,45 @@ public class InstanceManager : MonoBehaviour
         }
 
     }
+    List<int> GetAvailableColumns()
+    {
+        List<int> available_cols = new List<int>();
+        GameObject[,] slotArray2D = Get2DSlotArray();
+        for(int i = 0; i < slotArray2D.GetLength(0); i++)
+        {
+            List<GameObject> col = new List<GameObject>(SelectColumn(slotArray2D, i));
+            if (!IsColumnFull(col))
+            {
+                available_cols.Add(i);
+            }
+        }
+        return available_cols;
+    }
 
+    public GameObject[] SelectColumn(GameObject[,] array, int colIndex)
+    {
+        GameObject[] column = new GameObject[array.GetLength(1)];
+        for (int i = 0; i < array.GetLength(1); i++)
+        {
+            column[i] = array[colIndex, i];
+      }
+        return column;
+    }
+
+    public GameObject[,] Get2DSlotArray()
+    {
+        GameObject[,] slot_array = new GameObject[board_dims[0], board_dims[1]];
+
+        foreach (GameObject slot in slots)
+        {
+            SlotData slotData = slot.GetComponent<SlotData>();
+            int col = slotData.pos[0];
+            int row = slotData.pos[1];
+            slot_array[col,row] = slot;
+        }
+        return slot_array;
+    }
+    
     bool IsColumnFull(List<GameObject> column)
     {
         List<SlotStatuses> status_list = new List<SlotStatuses>();
@@ -647,6 +684,7 @@ public class InstanceManager : MonoBehaviour
                 }
                 else if (gameMode == GameMode.PvAI) 
                 {
+                    transform.parent.Find("restart_text").gameObject.SetActive(true);
                     redAgent.UpdateReward();
                 }
                 return;
@@ -806,12 +844,36 @@ public class InstanceManager : MonoBehaviour
             GameObject.Destroy(t.gameObject);
         }
 
+        if (gameMode == GameMode.RvAI || gameMode == GameMode.AIvAI || gameMode == GameMode.PvAI)
+        {
+            if(gameMode == GameMode.AIvAI)
+            {
+                yellowAgent.SetReward(0);
+            }
+            redAgent.SetReward(0);
+        }
+
         slots.Clear();
         CreateSlots();
         InitialiseTurn();
         InitialisePointer();
         transform.parent.GetComponentInChildren<WinTextManager>(true).gameObject.SetActive(false);
+
+        if(gameMode == GameMode.RvAI && !getAgentFromStatus(ai_colour).plays_second)
+        {
+            getAgentFromStatus(ai_colour).RequestDecision();
+        }
+
+        if(gameMode == GameMode.RvAI && getAgentFromStatus(ai_colour).plays_second)
+        {
+            PlayRandomTurn();
+        }
+        if(gameMode == GameMode.PvAI)
+        {
+            turn_played = false;
+        }
     }
+
     /*
     public override void OnEpisodeBegin()
     {
@@ -826,8 +888,10 @@ public class InstanceManager : MonoBehaviour
         int selected_column;
         if (!gameFinished)
         {
-            selected_column = random.Next(0, board_dims[0]);
-            PlayTurn(selected_column);
+            List<int> available_cols = GetAvailableColumns();
+            if (available_cols.Count > 1) { selected_column = random.Next(0, available_cols.Count); PlayTurn(available_cols[selected_column]); }
+            else {PlayTurn(0); }
+            
             turn_played = true;
         }
         if (gameFinished)
@@ -958,32 +1022,30 @@ public class InstanceManager : MonoBehaviour
     {
         int selected_column;
         selected_column = (board_dims[0] / 2) - 1;
-
-            pointer.GetComponent<PointerData>().UpdatePosition((sbyte)CheckIndex(GetKeyPressed()));
-            if (Input.GetKeyDown(KeyCode.Return))
+        sbyte key_pressed = (sbyte)CheckIndex(GetKeyPressed());
+        pointer.GetComponent<PointerData>().UpdatePosition(key_pressed);
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            if (!gameFinished)
             {
-                if (!gameFinished)
-                {
-                    selected_column = pointer.GetComponent<PointerData>().selected_col;
-                    PlayTurn(selected_column);
-                    turn_played = true;
-                }
-                else if (gameFinished)
-                {
-                    if (gameMode != GameMode.PvAI)
-                    {
-                        transform.parent.Find("restart_text").gameObject.SetActive(false);
-                        StartGame();
-                    }
-                    else if (gameMode == GameMode.PvAI)
-                    {
-                        transform.parent.Find("restart_text").gameObject.SetActive(false);
-                        redAgent.SetReward(GetReward(latest_winner, SlotStatuses.Red));
-                        redAgent.EndEpisode();
-                    }
-
+                selected_column = pointer.GetComponent<PointerData>().selected_col;
+                PlayTurn(selected_column);
+                turn_played = true;
             }
-
+            else if (gameFinished)
+            {
+                if (gameMode != GameMode.PvAI)
+                {
+                    transform.parent.Find("restart_text").gameObject.SetActive(false);
+                    StartGame();
+                }
+                else if (gameMode == GameMode.PvAI)
+                {
+                    transform.parent.Find("restart_text").gameObject.SetActive(false);
+                    redAgent.SetReward(GetReward(latest_winner, SlotStatuses.Red));
+                    redAgent.EndEpisode();
+                }
+            }
         }
     }
 

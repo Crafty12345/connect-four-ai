@@ -339,6 +339,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Background
       objectReference: {fileID: 0}
+    - target: {fileID: 2124445365972944616, guid: b8e4307af9596004ab7809143268f4f3, type: 3}
+      propertyPath: MaxStep
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2617205882237119052, guid: b8e4307af9596004ab7809143268f4f3, type: 3}
       propertyPath: gameMode
       value: 2
@@ -391,10 +395,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4706191594366987120, guid: b8e4307af9596004ab7809143268f4f3, type: 3}
+      propertyPath: MaxStep
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 5233357757934281310, guid: b8e4307af9596004ab7809143268f4f3, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 71df99e1a0089664f8518f2e0db33fb6, type: 3}
+      objectReference: {fileID: 5022602860645237092, guid: 52657534e77ec8c479640a4198d43216, type: 3}
     - target: {fileID: 5233357757934281310, guid: b8e4307af9596004ab7809143268f4f3, type: 3}
       propertyPath: m_BehaviorType
       value: 2

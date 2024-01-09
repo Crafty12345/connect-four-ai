@@ -17,4 +17,5 @@ MonoBehaviour:
   loseReward: -1
   surviveReward: 0.0001
   blockReward: 0.1
+  maxStepReward: -0.3
   observationType: 1
